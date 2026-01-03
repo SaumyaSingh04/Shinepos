@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import InventoryManagement from '../components/InventoryManagement';
-import StaffManagement from '../components/StaffManagement';
-import KitchenDisplay from '../components/KitchenDisplay';
-import NotificationCenter from '../components/NotificationCenter';
+import InventoryManagement from '../components/restaurant/InventoryManagement';
+import StaffManagement from '../components/restaurant/StaffManagement';
+import KitchenDisplay from '../components/restaurant/KitchenDisplay';
+import NotificationCenter from '../components/restaurant/NotificationCenter';
 
 const RestaurantDashboard = () => {
   const [activeTab, setActiveTab] = useState('orders');

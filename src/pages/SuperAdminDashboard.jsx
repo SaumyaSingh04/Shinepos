@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import SystemMonitoring from '../components/SystemMonitoring';
-import AdvancedAnalytics from '../components/AdvancedAnalytics';
-import BillingManagement from '../components/BillingManagement.jsx';
-import SettingsManagement from '../components/SettingsManagement.jsx';
-import UserManagement from '../components/UserManagement.jsx';
-import CommunicationCenter from '../components/CommunicationCenter.jsx';
+import SystemMonitoring from '../components/superadmin/SystemMonitoring';
+import AdvancedAnalytics from '../components/superadmin/AdvancedAnalytics';
+import BillingManagement from '../components/superadmin/BillingManagement.jsx';
+import SettingsManagement from '../components/superadmin/SettingsManagement.jsx';
+import UserManagement from '../components/superadmin/UserManagement.jsx';
+import CommunicationCenter from '../components/superadmin/CommunicationCenter.jsx';
 
 const SuperAdminDashboard = () => {
   const [restaurants, setRestaurants] = useState([]);
