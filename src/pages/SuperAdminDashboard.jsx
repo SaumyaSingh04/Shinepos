@@ -644,7 +644,6 @@ const SuperAdminDashboard = () => {
         {activeTab === 'settings-email' && <SettingsManagement activeCategory="EMAIL" />}
         {activeTab === 'settings-payment' && <SettingsManagement activeCategory="PAYMENT" />}
         {activeTab === 'settings-security' && <SettingsManagement activeCategory="SECURITY" />}
-        {activeTab === 'settings-plan-limits' && <SettingsManagement activeCategory="PLAN_LIMITS" />}
         {activeTab === 'settings-general' && <SettingsManagement activeCategory="GENERAL" />}
         
         {activeTab === 'communication' && <CommunicationCenter />}

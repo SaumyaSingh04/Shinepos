@@ -132,13 +132,13 @@ const BillingManagement = () => {
                     </div>
                   </div>
                   <div className="bg-slate-50 rounded-lg p-3 lg:p-4">
-                    <p className="text-xs lg:text-sm text-slate-500 font-medium">Created</p>
-                    <p className="text-base lg:text-lg font-bold text-slate-900">{new Date(restaurant.createdAt).toLocaleDateString()}</p>
+                    <p className="text-xs lg:text-sm text-slate-500 font-medium">Plan Features</p>
+                    <p className="text-base lg:text-lg font-bold text-slate-900">Unlimited Access</p>
                   </div>
                 </div>
                 
                 <div className="border-t pt-4 lg:pt-6">
-                  <h4 className="text-sm font-medium text-slate-700 mb-3 lg:mb-4">Change Plan</h4>
+                  <h4 className="text-sm font-medium text-slate-700 mb-3 lg:mb-4">Change Plan (All plans include unlimited access)</h4>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3">
                     {Object.entries(plans).map(([planKey, planData]) => (
                       <button
