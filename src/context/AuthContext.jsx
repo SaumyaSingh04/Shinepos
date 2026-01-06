@@ -39,7 +39,11 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, restaurantSlug = null) => {
     try {
+<<<<<<< HEAD
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+=======
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+>>>>>>> 783f3bf66760485d9c0f978037ee0ae65ec7b69f
         email,
         password,
         restaurantSlug

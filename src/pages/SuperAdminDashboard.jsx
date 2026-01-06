@@ -20,6 +20,7 @@ const SuperAdminDashboard = () => {
   const [selectedRestaurants, setSelectedRestaurants] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     adminEmail: '',
     adminPassword: '',
     adminName: '',
@@ -386,6 +387,20 @@ const SuperAdminDashboard = () => {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Restaurant Slug</label>
+                  <input
+                    type="text"
+                    name="slug"
+                    placeholder="e.g., pizza-palace, joes-cafe"
+                    value={formData.slug}
+                    onChange={handleChange}
+                    required
+                    pattern="[a-z0-9-]+"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Used for public order URL: /order/your-slug</p>
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Cuisine Type</label>
                   <input
                     type="text"
@@ -644,7 +659,6 @@ const SuperAdminDashboard = () => {
         {activeTab === 'settings-email' && <SettingsManagement activeCategory="EMAIL" />}
         {activeTab === 'settings-payment' && <SettingsManagement activeCategory="PAYMENT" />}
         {activeTab === 'settings-security' && <SettingsManagement activeCategory="SECURITY" />}
-        {activeTab === 'settings-plan-limits' && <SettingsManagement activeCategory="PLAN_LIMITS" />}
         {activeTab === 'settings-general' && <SettingsManagement activeCategory="GENERAL" />}
         
         {activeTab === 'communication' && <CommunicationCenter />}
