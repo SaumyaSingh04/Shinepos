@@ -28,7 +28,7 @@ const StaffManagement = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await axios.get('/api/staff');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/staff`);
       setStaff(response.data.staff);
     } catch (error) {
       console.error('Error fetching staff:', error);
@@ -44,9 +44,9 @@ const StaffManagement = () => {
       };
 
       if (editingStaff) {
-        await axios.put(`/api/staff/${editingStaff._id}`, staffData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/staff/${editingStaff._id}`, staffData);
       } else {
-        await axios.post('/api/staff', staffData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/staff`, staffData);
       }
       
       setFormData({ name: '', email: '', password: '', role: 'CASHIER', permissions: [], phone: '', hourlyRate: '' });
@@ -74,7 +74,7 @@ const StaffManagement = () => {
 
   const scheduleShift = async (staffId, shiftData) => {
     try {
-      await axios.post(`/api/staff/${staffId}/shift`, shiftData);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/staff/${staffId}/shift`, shiftData);
       fetchStaff();
     } catch (error) {
       console.error('Error scheduling shift:', error);

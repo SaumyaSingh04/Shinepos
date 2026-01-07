@@ -23,7 +23,7 @@ const InventoryManagement = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('/api/inventory');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/inventory`);
       setInventory(response.data.inventory);
     } catch (error) {
       console.error('Error fetching inventory:', error);
@@ -32,7 +32,7 @@ const InventoryManagement = () => {
 
   const fetchLowStockItems = async () => {
     try {
-      const response = await axios.get('/api/inventory/low-stock');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/inventory/low-stock`);
       setLowStockItems(response.data.lowStockItems);
     } catch (error) {
       console.error('Error fetching low stock items:', error);
@@ -43,9 +43,9 @@ const InventoryManagement = () => {
     e.preventDefault();
     try {
       if (editingItem) {
-        await axios.put(`/api/inventory/${editingItem._id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/inventory/${editingItem._id}`, formData);
       } else {
-        await axios.post('/api/inventory', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/inventory`, formData);
       }
       setFormData({ name: '', category: 'ingredient', currentStock: '', minStock: '', unit: 'kg', costPerUnit: '', supplier: '' });
       setShowAddForm(false);
@@ -59,7 +59,7 @@ const InventoryManagement = () => {
 
   const handleRestock = async (itemId, quantity) => {
     try {
-      await axios.patch(`/api/inventory/${itemId}/restock`, { quantity: parseInt(quantity) });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/inventory/${itemId}/restock`, { quantity: parseInt(quantity) });
       fetchInventory();
       fetchLowStockItems();
     } catch (error) {

@@ -21,7 +21,7 @@ const SettingsManagement = ({ activeCategory: initialCategory = 'SYSTEM' }) => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get('/api/settings');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/settings`);
       setSettings(response.data.settings);
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -33,7 +33,7 @@ const SettingsManagement = ({ activeCategory: initialCategory = 'SYSTEM' }) => {
   const updateSetting = async (key, value, category, description) => {
     setSaving(true);
     try {
-      await axios.put('/api/settings', { key, value, category, description });
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/settings`, { key, value, category, description });
       fetchSettings();
     } catch (error) {
       console.error('Error updating setting:', error);

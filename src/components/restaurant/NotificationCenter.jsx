@@ -17,7 +17,7 @@ const NotificationCenter = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get('/api/communication/restaurant');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/communication/restaurant`);
       setNotifications(response.data.messages);
       setUnreadCount(response.data.messages.filter(msg => !msg.isRead).length);
     } catch (error) {
@@ -27,7 +27,7 @@ const NotificationCenter = () => {
 
   const markAsRead = async (messageId) => {
     try {
-      await axios.put(`/api/communication/${messageId}/read`);
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/communication/${messageId}/read`);
       setNotifications(prev => 
         prev.map(notif => 
           notif._id === messageId ? { ...notif, isRead: true } : notif

@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
-    contactNo: '',
     email: '',
+    phone: '',
+    restaurantPhone: '',
     pinCode: '',
     city: '',
     state: '',
@@ -28,11 +29,37 @@ const Register = () => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
+    // API call
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/restaurants`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          restaurantPhone: formData.restaurantPhone,
+          pinCode: formData.pinCode,
+          city: formData.city,
+          state: formData.state,
+          address: formData.address
+        })
+      });
+
+      if (response.ok) {
+        setLoading(false);
+        navigate('/thank-you');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Registration failed');
+        setLoading(false);
+      }
+    } catch (error) {
+      setError('Network error. Please try again.');
       setLoading(false);
-      navigate('/thank-you');
-    }, 1000);
+    }
   };
 
   const handleChange = (e) => {
@@ -63,9 +90,21 @@ const Register = () => {
         <div style={{ marginBottom: '15px' }}>
           <input
             type="tel"
-            name="contactNo"
-            placeholder="Contact Number"
-            value={formData.contactNo}
+            name="phone"
+            placeholder="Phone Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+            style={{ width: '100%', padding: '10px' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '15px' }}>
+          <input
+            type="tel"
+            name="restaurantPhone"
+            placeholder="Restaurant Phone Number"
+            value={formData.restaurantPhone}
             onChange={handleChange}
             required
             style={{ width: '100%', padding: '10px' }}

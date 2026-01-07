@@ -11,7 +11,7 @@ const AdvancedAnalytics = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get('/api/analytics/advanced');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/analytics/advanced`);
       setAnalytics(response.data);
       setLoading(false);
     } catch (error) {
@@ -22,7 +22,7 @@ const AdvancedAnalytics = () => {
 
   const exportReport = async (format) => {
     try {
-      const response = await axios.get(`/api/analytics/export?format=${format}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/analytics/export?format=${format}`, {
         responseType: format === 'csv' ? 'blob' : 'json'
       });
       

@@ -21,7 +21,7 @@ const BillingManagement = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await axios.get('/api/restaurants');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/restaurants`);
       setRestaurants(response.data.restaurants || []);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -33,7 +33,7 @@ const BillingManagement = () => {
 
   const updatePlan = async (restaurantId, plan) => {
     try {
-      await axios.put(`/api/subscriptions/restaurant/${restaurantId}/plan`, { plan });
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/subscriptions/restaurant/${restaurantId}/plan`, { plan });
       fetchRestaurants();
     } catch (error) {
       console.error('Error updating plan:', error);

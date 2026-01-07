@@ -30,7 +30,7 @@ const KitchenDisplay = () => {
 
   const fetchKitchenOrders = async () => {
     try {
-      const response = await axios.get('/api/kitchen/orders');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/kitchen/orders`);
       setOrders(response.data.orders);
     } catch (error) {
       console.error('Error fetching kitchen orders:', error);
@@ -39,7 +39,7 @@ const KitchenDisplay = () => {
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      await axios.patch(`/api/kitchen/orders/${orderId}/status`, { status });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/kitchen/orders/${orderId}/status`, { status });
       fetchKitchenOrders();
     } catch (error) {
       console.error('Error updating order status:', error);
@@ -48,7 +48,7 @@ const KitchenDisplay = () => {
 
   const setPriority = async (orderId, priority) => {
     try {
-      await axios.patch(`/api/kitchen/orders/${orderId}/priority`, { priority });
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/kitchen/orders/${orderId}/priority`, { priority });
       fetchKitchenOrders();
     } catch (error) {
       console.error('Error setting priority:', error);

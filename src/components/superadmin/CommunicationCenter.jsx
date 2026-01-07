@@ -22,7 +22,7 @@ const CommunicationCenter = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('/api/communication');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/communication`);
       setMessages(response.data.messages);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -33,7 +33,7 @@ const CommunicationCenter = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const response = await axios.get('/api/restaurants');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/restaurants`);
       setRestaurants(response.data.restaurants);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -43,7 +43,7 @@ const CommunicationCenter = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/communication', formData);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/communication`, formData);
       setFormData({
         title: '',
         message: '',

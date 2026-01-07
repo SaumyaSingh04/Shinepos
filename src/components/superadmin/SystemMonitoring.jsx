@@ -17,7 +17,7 @@ const SystemMonitoring = () => {
 
   const fetchSystemHealth = async () => {
     try {
-      const response = await axios.get('/api/system/health');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/system/health`);
       setSystemHealth(response.data);
       setLoading(false);
     } catch (error) {
@@ -28,7 +28,7 @@ const SystemMonitoring = () => {
 
   const fetchHealthHistory = async () => {
     try {
-      const response = await axios.get('/api/system/health/history?hours=24');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/system/health/history?hours=24`);
       setHealthHistory(response.data.healthHistory);
     } catch (error) {
       console.error('Error fetching health history:', error);

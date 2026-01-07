@@ -45,7 +45,7 @@ const SuperAdminDashboard = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const response = await axios.get('/api/restaurants');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/restaurants`);
       setRestaurants(response.data.restaurants);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -54,7 +54,7 @@ const SuperAdminDashboard = () => {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get('/api/restaurants/analytics');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/restaurants/analytics`);
       setAnalytics(response.data.analytics);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -68,10 +68,10 @@ const SuperAdminDashboard = () => {
 
     try {
       if (editingRestaurant) {
-        await axios.put(`/api/restaurants/${editingRestaurant._id}`, { name: formData.name });
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/restaurants/${editingRestaurant._id}`, { name: formData.name });
         setEditingRestaurant(null);
       } else {
-        await axios.post('/api/restaurants', formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/restaurants`, formData);
       }
       setFormData({ name: '', adminEmail: '', adminPassword: '', adminName: '', phone: '', address: '', city: '', state: '', zipCode: '', cuisine: '', description: '' });
       setShowCreateForm(false);
@@ -92,7 +92,7 @@ const SuperAdminDashboard = () => {
   const handleDelete = async (restaurantId) => {
     if (window.confirm('Are you sure you want to delete this restaurant? This action cannot be undone.')) {
       try {
-        await axios.delete(`/api/restaurants/${restaurantId}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/restaurants/${restaurantId}`);
         fetchRestaurants();
         fetchAnalytics();
       } catch (error) {
@@ -103,7 +103,7 @@ const SuperAdminDashboard = () => {
 
   const toggleRestaurantStatus = async (restaurantId) => {
     try {
-      await axios.patch(`/api/restaurants/${restaurantId}/toggle-status`);
+      await axios.patch(`${import.meta.env.VITE_API_URL}/api/restaurants/${restaurantId}/toggle-status`);
       fetchRestaurants();
       fetchAnalytics();
     } catch (error) {
@@ -117,7 +117,7 @@ const SuperAdminDashboard = () => {
     try {
       await Promise.all(
         selectedRestaurants.map(id => 
-          axios.patch(`/api/restaurants/${id}/toggle-status`)
+          axios.patch(`${import.meta.env.VITE_API_URL}/api/restaurants/${id}/toggle-status`)
         )
       );
       setSelectedRestaurants([]);

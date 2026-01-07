@@ -23,7 +23,7 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/api/user-management');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/user-management`);
       setUsers(response.data.users);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -34,7 +34,7 @@ const UserManagement = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const response = await axios.get('/api/restaurants');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/restaurants`);
       setRestaurants(response.data.restaurants);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -53,7 +53,7 @@ const UserManagement = () => {
         ...formData,
         restaurantId: selectedRestaurant
       };
-      await axios.post(`/api/user-management/restaurant/${selectedRestaurant}`, payload);
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/user-management/restaurant/${selectedRestaurant}`, payload);
       setFormData({ email: '', password: '', name: '', role: 'WAITER', shift: 'MORNING', permissions: [] });
       setShowCreateForm(false);
       setSelectedRestaurant('');
@@ -66,7 +66,7 @@ const UserManagement = () => {
 
   const handleToggleStatus = async (user) => {
     try {
-      await axios.put(`/api/user-management/restaurant/${user.restaurantId}/user/${user._id}`, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/user-management/restaurant/${user.restaurantId}/user/${user._id}`, {
         name: user.name,
         role: user.role,
         isActive: !user.isActive
@@ -80,7 +80,7 @@ const UserManagement = () => {
   const handleDeleteUser = async (user) => {
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
       try {
-        await axios.delete(`/api/user-management/restaurant/${user.restaurantId}/user/${user._id}`);
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/user-management/restaurant/${user.restaurantId}/user/${user._id}`);
         fetchUsers();
       } catch (error) {
         console.error('Error deleting user:', error);
