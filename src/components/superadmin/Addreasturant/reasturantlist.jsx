@@ -3,7 +3,7 @@ import { FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useRestaurantList } from './hooks/useRestaurantList';
 
-const RestaurantList = () => {
+const RestaurantList = ({ onEdit }) => {
   const navigate = useNavigate();
   const { restaurants, loading, toggleStatus, deleteRestaurant } = useRestaurantList();
 
@@ -67,7 +67,7 @@ const RestaurantList = () => {
                     {restaurant.isActive ? <FiToggleRight size={20} /> : <FiToggleLeft size={20} />}
                   </button>
                   <button
-                    onClick={() => navigate(`/superadmin/restaurants/edit/${restaurant._id}`)}
+                    onClick={() => onEdit(restaurant)}
                     className="text-indigo-600 hover:text-indigo-900"
                     title="Edit"
                   >
