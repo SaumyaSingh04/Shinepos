@@ -7,6 +7,7 @@ import Menu from '../components/Reasturant/Menu/menu/Menu';
 import Addon from '../components/Reasturant/Menu/addon/Addon';
 import Variation from '../components/Reasturant/Menu/variation/Variation';
 import StaffList from '../components/Reasturant/Staff/Staff';
+import Order from '../components/Reasturant/Order/Order';
 
 const RestaurantDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -32,7 +33,7 @@ const RestaurantDashboard = () => {
       case 'variations':
         return <Variation />;
       case 'orders':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Orders</h2></div>;
+        return <Order />;
       case 'staff':
         return <StaffList />;
       case 'settings':

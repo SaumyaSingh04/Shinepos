@@ -164,7 +164,12 @@ const ItemList = () => {
               </div>
               
               <div className="text-sm text-gray-600">
-                <span className="font-medium">Price:</span> ₹{item.price || 'N/A'}
+                <span className="font-medium">Price:</span> 
+                {item.variation && item.variation.length > 0 ? (
+                  <span>₹{Math.min(...item.variation.map(v => v.price || 0))}</span>
+                ) : (
+                  <span className="text-gray-400">No variations</span>
+                )}
               </div>
             </div>
           </div>
