@@ -4,7 +4,7 @@ import { FiPlus, FiEye, FiEdit, FiDollarSign, FiClipboard } from 'react-icons/fi
 import OrderList from './OrderList';
 import CreateOrder from './CreateOrder';
 import OrderDetails from './OrderDetails';
-import PaymentModal from './PaymentModal';
+import PaymentModal from '../Payment/PaymentModal';
 import KOT from './KOT';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
