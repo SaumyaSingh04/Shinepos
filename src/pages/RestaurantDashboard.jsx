@@ -8,6 +8,7 @@ import Addon from '../components/Reasturant/Menu/addon/Addon';
 import Variation from '../components/Reasturant/Menu/variation/Variation';
 import StaffList from '../components/Reasturant/Staff/Staff';
 import Order from '../components/Reasturant/Order/Order';
+import KOT from '../components/Reasturant/Order/KOT';
 
 const RestaurantDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -34,6 +35,8 @@ const RestaurantDashboard = () => {
         return <Variation />;
       case 'orders':
         return <Order />;
+      case 'kot':
+        return <KOT />;
       case 'staff':
         return <StaffList />;
       case 'settings':

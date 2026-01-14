@@ -2,6 +2,28 @@ import React, { useState, useEffect } from 'react';
 import AddVariation from './AddVariation';
 
 const VariationList = ({ variations, loading, onAdd, onEdit, onDelete }) => {
+  const toggleVariationStatus = async (id, currentStatus) => {
+    const newStatus = !currentStatus;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/variation/update/variation/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ available: newStatus })
+      });
+      
+      if (response.ok) {
+        onDelete(); // Refresh data in parent
+      }
+    } catch (error) {
+      console.error('Error updating variation status:', error);
+    }
+  };
+
   const deleteVariation = async (id) => {
     if (!confirm('Are you sure you want to delete this variation?')) return;
     
@@ -55,6 +77,18 @@ const VariationList = ({ variations, loading, onAdd, onEdit, onDelete }) => {
               </div>
               
               <div className="flex gap-2">
+                <button
+                  onClick={() => toggleVariationStatus(variation._id, variation.available)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                    variation.available ? 'bg-green-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      variation.available ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
                 <button
                   onClick={() => onEdit && onEdit(variation)}
                   className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"

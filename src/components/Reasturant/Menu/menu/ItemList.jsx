@@ -60,6 +60,40 @@ const ItemList = () => {
     setLoading(false);
   };
 
+  const toggleItemStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    
+    // Optimistic update
+    setItems(items.map(item => 
+      item._id === id ? { ...item, status: newStatus } : item
+    ));
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/menus/update/menu-item/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      });
+      
+      if (!response.ok) {
+        // Revert on failure
+        setItems(items.map(item => 
+          item._id === id ? { ...item, status: currentStatus } : item
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating item status:', error);
+      // Revert on failure
+      setItems(items.map(item => 
+        item._id === id ? { ...item, status: currentStatus } : item
+      ));
+    }
+  };
+
   const deleteItem = async (id) => {
     if (!confirm('Are you sure you want to delete this item?')) return;
     
@@ -118,6 +152,18 @@ const ItemList = () => {
         <div key={item._id} className="bg-white p-4 rounded-lg shadow-md border">
           <div className="flex items-start gap-4">
             <div className="flex flex-col gap-2">
+              <button
+                onClick={() => toggleItemStatus(item._id, item.status)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                  item.status === 'active' ? 'bg-green-600' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    item.status === 'active' ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
               <button
                 onClick={() => handleEdit(item)}
                 className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"

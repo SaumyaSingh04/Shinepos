@@ -3,3 +3,4 @@ export { default as OrderList } from './OrderList';
 export { default as CreateOrder } from './CreateOrder';
 export { default as OrderDetails } from './OrderDetails';
 export { default as PaymentModal } from './PaymentModal';
+export { default as KOT } from './KOT';

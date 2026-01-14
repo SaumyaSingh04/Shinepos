@@ -2,6 +2,28 @@ import React, { useState, useEffect } from 'react';
 import AddAddon from './AddAddon';
 
 const AddonList = ({ addons, loading, onAdd, onEdit, onDelete }) => {
+  const toggleAddonStatus = async (id, currentStatus) => {
+    const newStatus = !currentStatus;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/addon/update/addon/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ available: newStatus })
+      });
+      
+      if (response.ok) {
+        onDelete(); // Refresh data in parent
+      }
+    } catch (error) {
+      console.error('Error updating addon status:', error);
+    }
+  };
+
   const deleteAddon = async (id) => {
     if (!confirm('Are you sure you want to delete this addon?')) return;
     
@@ -66,6 +88,18 @@ const AddonList = ({ addons, loading, onAdd, onEdit, onDelete }) => {
               </div>
               
               <div className="flex gap-2">
+                <button
+                  onClick={() => toggleAddonStatus(addon._id, addon.available)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                    addon.available ? 'bg-green-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      addon.available ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
                 <button
                   onClick={() => onEdit && onEdit(addon)}
                   className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
