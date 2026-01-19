@@ -1,6 +1,6 @@
 {
   "outputDirectory": "dist",
-  "installCommand": "npm install && chmod +x node_modules/.bin/vite",
+  "installCommand": "npm install",
   "buildCommand": "npm run build",
   "rewrites": [
     {
