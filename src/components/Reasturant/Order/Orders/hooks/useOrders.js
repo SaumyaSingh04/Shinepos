@@ -23,7 +23,25 @@ export const useOrders = () => {
       const response = await axios.get(`${API_BASE_URL}/api/orders/all/orders`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrders(response.data.orders);
+      
+      // Fetch all tables to map merged table info
+      const tablesResponse = await axios.get(`${API_BASE_URL}/api/table/tables`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const tables = tablesResponse.data.tables;
+      
+      // Enrich orders with merged table info
+      const enrichedOrders = response.data.orders.map(order => {
+        if (order.mergedTables && order.mergedTables.length > 0) {
+          const mergedTableNumbers = order.mergedTables
+            .map(tableId => tables.find(t => t._id === tableId)?.tableNumber)
+            .filter(Boolean);
+          return { ...order, mergedTableNumbers };
+        }
+        return order;
+      });
+      
+      setOrders(enrichedOrders);
     } catch (err) {
       setError('Failed to fetch orders');
       console.error('Fetch orders error:', err);

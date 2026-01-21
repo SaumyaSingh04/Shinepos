@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const AddTable = ({ onAdd, onClose }) => {
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const AddTable = ({ onClose, onTableAdded }) => {
   const [formData, setFormData] = useState({
     tableNumber: '',
     capacity: '',
@@ -14,16 +17,23 @@ const AddTable = ({ onAdd, onClose }) => {
     setLoading(true);
     setError('');
 
-    const result = await onAdd({
-      ...formData,
-      capacity: parseInt(formData.capacity)
-    });
-
-    if (result.success) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${API_BASE_URL}/api/table/add/table`,
+        {
+          ...formData,
+          capacity: parseInt(formData.capacity)
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      onTableAdded(response.data.table);
       onClose();
-    } else {
-      setError(result.error);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to add table');
     }
+    
     setLoading(false);
   };
 

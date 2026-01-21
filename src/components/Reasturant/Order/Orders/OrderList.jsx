@@ -95,7 +95,14 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-900">
-                  {order.tableNumber || 'N/A'}
+                  <div>
+                    <div>{order.tableNumber || 'N/A'}</div>
+                    {order.mergedTableNumbers && order.mergedTableNumbers.length > 0 && (
+                      <div className="text-xs text-purple-600">
+                        Merged: {order.mergedTableNumbers.join(', ')}
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-900">
                   <div>

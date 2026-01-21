@@ -11,8 +11,15 @@ const CreateOrder = ({ onCreateOrder, onCancel }) => {
     setCustomerName,
     customerPhone,
     setCustomerPhone,
+    guestCount,
+    setGuestCount,
     selectedTable,
     setSelectedTable,
+    showMergeOption,
+    selectedTablesForMerge,
+    selectedCapacity,
+    isCapacityMet,
+    toggleTableSelection,
     loading,
     error,
     selectedItem,
@@ -74,21 +81,66 @@ const CreateOrder = ({ onCreateOrder, onCancel }) => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Table (Optional)
+                Number of Guests *
               </label>
-              <select
-                value={selectedTable}
-                onChange={(e) => setSelectedTable(e.target.value)}
+              <input
+                type="number"
+                value={guestCount}
+                onChange={(e) => setGuestCount(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">No Table</option>
-                {tables.filter(t => t.status === 'AVAILABLE').map(table => (
-                  <option key={table._id} value={table._id}>
-                    {table.tableNumber} (Capacity: {table.capacity})
-                  </option>
-                ))}
-              </select>
+                min="1"
+                required
+              />
             </div>
+
+            {showMergeOption ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Tables to Merge *
+                </label>
+                <div className="space-y-2 max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-2">
+                  {tables.filter(t => t.status === 'AVAILABLE').map(table => {
+                    const isDisabled = !selectedTablesForMerge.includes(table._id) && isCapacityMet;
+                    
+                    return (
+                      <label key={table._id} className={`flex items-center space-x-2 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={selectedTablesForMerge.includes(table._id)}
+                          disabled={isDisabled}
+                          onChange={() => toggleTableSelection(table._id)}
+                          className="rounded"
+                        />
+                        <span className="text-sm">
+                          {table.tableNumber} (Capacity: {table.capacity})
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-purple-600 mt-1">
+                  Guest count exceeds single table capacity. Select multiple tables. (Selected: {selectedCapacity}/{guestCount})
+                </p>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Table (Optional)
+                </label>
+                <select
+                  value={selectedTable}
+                  onChange={(e) => setSelectedTable(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">No Table</option>
+                  {tables.filter(t => t.status === 'AVAILABLE').map(table => (
+                    <option key={table._id} value={table._id}>
+                      {table.tableNumber} (Capacity: {table.capacity})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Order Items */}

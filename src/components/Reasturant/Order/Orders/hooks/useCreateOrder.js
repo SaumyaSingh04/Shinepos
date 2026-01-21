@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useMergeTablesForOrder } from './useMergeTablesForOrder';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -9,12 +10,22 @@ export const useCreateOrder = (onCreateOrder) => {
   const [orderItems, setOrderItems] = useState([]);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [guestCount, setGuestCount] = useState('');
   const [selectedTable, setSelectedTable] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedVariation, setSelectedVariation] = useState(null);
   const [selectedAddons, setSelectedAddons] = useState([]);
+
+  const {
+    showMergeOption,
+    selectedTablesForMerge,
+    selectedCapacity,
+    isCapacityMet,
+    toggleTableSelection,
+    mergeTables
+  } = useMergeTablesForOrder(guestCount, tables);
 
   useEffect(() => {
     fetchMenuItems();
@@ -117,6 +128,11 @@ export const useCreateOrder = (onCreateOrder) => {
       return;
     }
     
+    if (!guestCount || parseInt(guestCount) <= 0) {
+      setError('Valid guest count is required');
+      return;
+    }
+    
     if (orderItems.length === 0) {
       setError('Please add at least one item to the order');
       return;
@@ -125,31 +141,43 @@ export const useCreateOrder = (onCreateOrder) => {
     setLoading(true);
     setError('');
 
-    const orderData = {
-      items: orderItems.map(item => ({
-        menuId: item.menuId,
-        quantity: item.quantity,
-        variation: {
-          variationId: item.variation._id
-        },
-        addons: item.addons.map(addon => ({
-          addonId: addon._id
-        }))
-      })),
-      customerName: customerName.trim(),
-      customerPhone: customerPhone.trim(),
-      tableId: selectedTable || undefined
-    };
+    try {
+      let tableId = selectedTable;
 
-    const result = await onCreateOrder(orderData);
-    
-    if (result.success) {
-      setOrderItems([]);
-      setCustomerName('');
-      setCustomerPhone('');
-      setSelectedTable('');
-    } else {
-      setError(result.error);
+      // Handle table merge if needed
+      if (showMergeOption && selectedTablesForMerge.length >= 2) {
+        tableId = await mergeTables();
+      }
+
+      const orderData = {
+        items: orderItems.map(item => ({
+          menuId: item.menuId,
+          quantity: item.quantity,
+          variation: {
+            variationId: item.variation._id
+          },
+          addons: item.addons.map(addon => ({
+            addonId: addon._id
+          }))
+        })),
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        tableId: tableId || undefined
+      };
+
+      const result = await onCreateOrder(orderData);
+      
+      if (result.success) {
+        setOrderItems([]);
+        setCustomerName('');
+        setCustomerPhone('');
+        setGuestCount('');
+        setSelectedTable('');
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to create order');
     }
     
     setLoading(false);
@@ -163,8 +191,15 @@ export const useCreateOrder = (onCreateOrder) => {
     setCustomerName,
     customerPhone,
     setCustomerPhone,
+    guestCount,
+    setGuestCount,
     selectedTable,
     setSelectedTable,
+    showMergeOption,
+    selectedTablesForMerge,
+    selectedCapacity,
+    isCapacityMet,
+    toggleTableSelection,
     loading,
     error,
     selectedItem,

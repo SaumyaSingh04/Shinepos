@@ -36,20 +36,6 @@ const Tables = () => {
     return () => abortController.abort();
   }, []);
 
-  const handleAddTable = async (tableData) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_BASE_URL}/api/table/tables`, tableData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTables(prev => [...prev, response.data.table]);
-      setShowAddTable(false);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.response?.data?.error || 'Failed to add table' };
-    }
-  };
-
   const handleUpdateTableStatus = async (tableId, status) => {
     try {
       const token = localStorage.getItem('token');
@@ -88,7 +74,7 @@ const Tables = () => {
 
       {showAddTable && (
         <AddTable
-          onAdd={handleAddTable}
+          onTableAdded={(table) => setTables(prev => [...prev, table])}
           onClose={() => setShowAddTable(false)}
         />
       )}
