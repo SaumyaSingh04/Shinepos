@@ -99,6 +99,7 @@ const Order = () => {
           onProcessPayment={handlePaymentClick}
           onAddItems={handleAddItems}
           onTransfer={handleTransferClick}
+          onRefresh={fetchOrders}
         />
       )}
 

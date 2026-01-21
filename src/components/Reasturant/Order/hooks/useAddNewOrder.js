@@ -109,39 +109,51 @@ export const useAddNewOrder = (orderId) => {
 
     try {
       const token = localStorage.getItem('token');
-      const itemsData = {
+      
+      const payload = {
+        extraItems: orderItems.map(item => {
+          const price = item.variation.price + item.addons.reduce((sum, addon) => sum + addon.price, 0);
+          return {
+            name: item.name,
+            quantity: item.quantity,
+            price: price,
+            total: price * item.quantity
+          };
+        })
+      };
+      
+      console.log('Sending payload:', JSON.stringify(payload, null, 2));
+      console.log('Order ID:', orderId);
+      console.log('API URL:', `${API_BASE_URL}/api/orders/add-extra-items/${orderId}`);
+      
+      const response = await axios.post(`${API_BASE_URL}/api/orders/add-items/${orderId}`, {
         items: orderItems.map(item => ({
           menuId: item.menuId,
           quantity: item.quantity,
-          variation: {
+          variation: item.variation ? {
             variationId: item.variation._id
-          },
+          } : undefined,
           addons: item.addons.map(addon => ({
             addonId: addon._id
           }))
         }))
-      };
-
-      const response = await axios.post(`${API_BASE_URL}/api/orders/add-items/${orderId}`, itemsData, {
-        headers: { Authorization: `Bearer ${token}` }
+      }, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
+
+      console.log('Response:', response.data);
 
       if (response.data) {
         setOrderItems([]);
         setError('');
-        onClose(); // Close modal and redirect
         return { success: true, order: response.data.order };
       }
     } catch (err) {
       console.error('Add items to order error:', err);
       console.log('Response data:', err.response?.data);
-      if (err.response?.data?.message) {
-        // Success case - backend returns success message
-        setOrderItems([]);
-        setError('');
-        onClose();
-        return { success: true };
-      }
       setError(err.response?.data?.error || 'Failed to add items to order');
       return { success: false, error: err.response?.data?.error || 'Failed to add items to order' };
     } finally {

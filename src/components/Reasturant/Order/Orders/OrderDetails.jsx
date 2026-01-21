@@ -227,6 +227,45 @@ const OrderDetails = ({ order, onUpdateStatus, onProcessPayment, onBack }) => {
                     </td>
                   </tr>
                 ))}
+                
+                {/* Extra Items */}
+                {order.extraItems && order.extraItems.length > 0 && (
+                  <>
+                    <tr className="bg-blue-50">
+                      <td colSpan="6" className="px-4 py-2 text-sm font-medium text-blue-800">
+                        Extra Items
+                      </td>
+                    </tr>
+                    {order.extraItems.map((extraItem, index) => (
+                      <tr key={`extra-${index}`} className="bg-blue-25">
+                        <td className="px-4 py-3">
+                          <div className="font-medium text-blue-900">+ {extraItem.name}</div>
+                          {extraItem.status && (
+                            <div className={`text-xs px-2 py-1 rounded inline-block mt-1 ${
+                              extraItem.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                              extraItem.status === 'PREPARING' ? 'bg-orange-100 text-orange-800' :
+                              extraItem.status === 'READY' ? 'bg-green-100 text-green-800' :
+                              'bg-purple-100 text-purple-800'
+                            }`}>
+                              {extraItem.status}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {formatCurrency(extraItem.price)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {extraItem.quantity}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">-</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">-</td>
+                        <td className="px-4 py-3 text-sm font-medium text-blue-900">
+                          {formatCurrency(extraItem.total)}
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
               </tbody>
               <tfoot className="bg-gray-50">
                 <tr>

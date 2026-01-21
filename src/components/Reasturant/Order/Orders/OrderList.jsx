@@ -5,7 +5,9 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
   const [filterStatus, setFilterStatus] = useState('ALL');
 
   console.log('OrderList loaded with onUpdatePriority:', !!onUpdatePriority);
+  console.log('OrderList loaded with onAddItems:', !!onAddItems);
   console.log('Sample order priority:', orders[0]?.priority);
+  console.log('Sample order status:', orders[0]?.status);
 
   const statusColors = {
     PENDING: 'bg-yellow-100 text-yellow-800',
@@ -103,7 +105,14 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-900">
-                  {order.items.length} item{order.items.length !== 1 ? 's' : ''}
+                  <div>
+                    <div>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</div>
+                    {order.extraItems && order.extraItems.length > 0 && (
+                      <div className="text-xs text-blue-600">
+                        +{order.extraItems.length} extra
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">
                   {formatCurrency(order.totalAmount)}
