@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { FiRefreshCw } from 'react-icons/fi';
+import { FiRefreshCw, FiUser, FiPhone, FiGrid, FiShoppingBag, FiFileText, FiPlus, FiRotateCcw, FiCreditCard, FiChevronDown } from 'react-icons/fi';
 
 const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRefresh, onUpdatePriority, onTransfer, onAddItems, activeTab, setActiveTab }) => {
   const [filterStatus, setFilterStatus] = useState('ALL');
+  const [expandedOrderItems, setExpandedOrderItems] = useState(null);
 
   console.log('OrderList loaded with onUpdatePriority:', !!onUpdatePriority);
   console.log('Sample order priority:', orders[0]?.priority);
@@ -34,80 +35,25 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
 
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  // Set first order as selected by default
+  React.useEffect(() => {
+    if (filteredOrders.length > 0 && !selectedOrder) {
+      setSelectedOrder(filteredOrders[0]);
+    }
+  }, [filteredOrders, selectedOrder]);
+
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
   };
 
   return (
     <div className="space-y-6">
-      {/* Filter Bar with Tab Buttons */}
-      <div className="bg-white/20 backdrop-blur-xl rounded-2xl p-4 border border-white/30 isolate">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setActiveTab('list')}
-              className={`px-6 py-3 rounded-xl flex items-center space-x-2 font-medium transition-colors shadow-lg isolate ${
-                activeTab === 'list' 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' 
-                  : 'bg-white/30 text-gray-900 hover:bg-white/40'
-              }`}
-            >
-              <span>📋 Orders</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('create')}
-              className={`px-6 py-3 rounded-xl flex items-center space-x-2 font-medium transition-colors shadow-lg isolate ${
-                activeTab === 'create' 
-                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                  : 'bg-white/30 text-gray-900 hover:bg-white/40'
-              }`}
-            >
-              <span>➕ New Order</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`px-6 py-3 rounded-xl flex items-center space-x-2 font-medium transition-all transform hover:scale-105 shadow-lg ${
-                activeTab === 'history' 
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white' 
-                  : 'bg-white/30 text-gray-900 hover:bg-white/40'
-              }`}
-            >
-              <span>📜 History</span>
-            </button>
-            
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-white/30 backdrop-blur-md border border-white/40 text-gray-900 rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors font-medium isolate"
-            >
-              <option value="ALL">🍽️ All Orders</option>
-              <option value="PENDING">⏳ Pending</option>
-              <option value="PREPARING">👨🍳 Preparing</option>
-              <option value="READY">✅ Ready</option>
-              <option value="DELIVERED">🚀 Delivered</option>
-              <option value="CANCELLED">❌ Cancelled</option>
-              <option value="PAID">💰 Paid</option>
-            </select>
-          </div>
-          
-          <button
-            onClick={onRefresh}
-            className="flex items-center space-x-2 px-6 py-3 bg-white/30 backdrop-blur-md hover:bg-white/40 text-gray-900 rounded-xl transition-colors border border-white/40 font-medium isolate"
-          >
-            <FiRefreshCw />
-            <span>Refresh</span>
-          </button>
-        </div>
-      </div>
-
       {/* Split View */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Side - Order List */}
         <div className="bg-white/20 backdrop-blur-xl rounded-2xl border border-white/30 overflow-hidden lg:col-span-1 self-start sticky top-6">
           <div className="p-4 border-b border-white/30">
-            <h3 className="text-xl font-bold text-gray-900">📋 Orders ({filteredOrders.length})</h3>
+            <h3 className="text-xl font-bold text-gray-900"><FiShoppingBag className="inline mr-2" />Orders ({filteredOrders.length})</h3>
           </div>
           <div className="overflow-y-auto max-h-[calc(100vh-300px)] p-4 space-y-3">
             {filteredOrders.map((order) => (
@@ -121,14 +67,29 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <h4 className="font-bold text-gray-900">{order.customerName}</h4>
-                    <p className="text-xs text-gray-700">🪑 {order.tableNumber || 'N/A'}</p>
+                    <p className="text-xs text-gray-700"><FiGrid className="inline mr-1" />{order.tableNumber || 'N/A'}</p>
                   </div>
                   <span className={`px-2 py-1 rounded-lg text-xs font-bold ${statusColors[order.status]}`}>
                     {order.status}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-900">🍕 {order.items.length} items</span>
+                  <div className="text-gray-900 text-sm cursor-pointer" onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedOrderItems(expandedOrderItems === order._id ? null : order._id);
+                  }}>
+                    <div className="flex items-center gap-1">
+                      <FiChevronDown className={`transition-transform ${expandedOrderItems === order._id ? 'rotate-180' : ''}`} />
+                      <span>{order.items.length} items</span>
+                    </div>
+                    {expandedOrderItems === order._id && (
+                      <div className="mt-2 space-y-1">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="text-xs text-gray-700">{item.quantity}x {item.name}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <span className="font-bold text-green-700">{formatCurrency(order.totalAmount)}</span>
                 </div>
               </div>
@@ -147,14 +108,14 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
           {selectedOrder ? (
             <>
               <div className="p-4 border-b border-white/30">
-                <h3 className="text-xl font-bold text-gray-900">📄 Order Details</h3>
+                <h3 className="text-xl font-bold text-gray-900"><FiFileText className="inline mr-2" />Order Details</h3>
               </div>
               <div className="p-6 space-y-4">
                 {/* Customer Info & Order Items in Same Row */}
                 <div className="grid grid-cols-2 gap-4">
                   {/* Customer Info */}
                   <div className="bg-white/30 backdrop-blur-md rounded-xl p-4 border border-white/30">
-                    <h4 className="font-bold text-gray-900 mb-3">👤 Customer Information</h4>
+                    <h4 className="font-bold text-gray-900 mb-3"><FiUser className="inline mr-2" />Customer Information</h4>
                     <div className="space-y-2 text-sm">
                       <p className="text-gray-900"><span className="font-medium">Name:</span> {selectedOrder.customerName}</p>
                       {selectedOrder.customerPhone && (
@@ -162,14 +123,14 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                       )}
                       <p className="text-gray-900"><span className="font-medium">Table:</span> {selectedOrder.tableNumber || 'N/A'}</p>
                       {selectedOrder.mergedTableNumbers && selectedOrder.mergedTableNumbers.length > 0 && (
-                        <p className="text-purple-700 font-medium">🔗 Merged: {selectedOrder.mergedTableNumbers.join(', ')}</p>
+                        <p className="text-purple-700 font-medium"><FiRotateCcw className="inline mr-1" />Merged: {selectedOrder.mergedTableNumbers.join(', ')}</p>
                       )}
                     </div>
                   </div>
 
                   {/* Order Items */}
                   <div className="bg-white/30 backdrop-blur-md rounded-xl p-4 border border-white/30">
-                    <h4 className="font-bold text-gray-900 mb-3">🍕 Order Items</h4>
+                    <h4 className="font-bold text-gray-900 mb-3"><FiShoppingBag className="inline mr-2" />Order Items</h4>
                     <div className="space-y-2 max-h-60 overflow-y-auto">
                       {selectedOrder.items.map((item, index) => (
                         <div key={index} className="flex justify-between items-start text-sm bg-white/20 p-2 rounded-lg">
@@ -195,14 +156,14 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                       onClick={() => onAddItems && onAddItems(selectedOrder._id)}
                       className="flex-1 p-3 bg-white/30 backdrop-blur-md hover:bg-white/50 text-gray-900 rounded-xl font-medium border border-white/40"
                     >
-                      ➕ Add
+                      <FiPlus className="inline mr-1" />Add
                     </button>
                     {selectedOrder.tableId && selectedOrder.status !== 'PAID' && selectedOrder.status !== 'CANCELLED' && (
                       <button
                         onClick={() => onTransfer(selectedOrder)}
                         className="flex-1 p-3 bg-white/30 backdrop-blur-md hover:bg-white/50 text-gray-900 rounded-xl font-medium border border-white/40"
                       >
-                        🔄 Transfer
+                        <FiRotateCcw className="inline mr-1" />Transfer
                       </button>
                     )}
                     {!selectedOrder.paymentDetails && (
@@ -210,7 +171,7 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                         onClick={() => onProcessPayment(selectedOrder)}
                         className="flex-1 p-3 bg-white/30 backdrop-blur-md hover:bg-white/50 text-gray-900 rounded-xl font-medium border border-white/40"
                       >
-                        💳 Pay
+                        <FiCreditCard className="inline mr-1" />Pay
                       </button>
                     )}
                   </div>
