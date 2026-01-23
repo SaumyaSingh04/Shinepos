@@ -19,6 +19,8 @@ const AddItem = ({ onSuccess, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [searchAddon, setSearchAddon] = useState('');
   const [searchVariation, setSearchVariation] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   useEffect(() => {
     fetchAddons();
@@ -52,6 +54,50 @@ const AddItem = ({ onSuccess, onBack }) => {
       }
     } catch (error) {
       console.error('Error fetching variations:', error);
+    }
+  };
+
+  const uploadToCloudinary = async (file, type) => {
+    try {
+      console.log('Creating FormData...');
+      const formData = new FormData();
+      formData.append('file', file);
+      console.log('FormData created');
+
+      const token = localStorage.getItem('token');
+      console.log('Token:', token ? 'exists' : 'missing');
+      
+      const url = `${import.meta.env.VITE_API_URL}/api/upload/media`;
+      console.log('Upload URL:', url);
+      
+      console.log('Sending fetch request...');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      console.log('Response received:', response.status);
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Upload error:', error);
+        throw new Error(error.error || 'Upload failed');
+      }
+      const data = await response.json();
+      console.log('Upload data:', data);
+      return data.url;
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.error('Upload timeout');
+        throw new Error('Upload timeout - file may be too large');
+      }
+      console.error('Upload exception:', error);
+      throw error;
     }
   };
 
@@ -255,22 +301,32 @@ const AddItem = ({ onSuccess, onBack }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">Image URL</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Image</label>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData(prev => ({ ...prev, imageUrl: reader.result }));
-                    };
-                    reader.readAsDataURL(file);
+                    console.log('File selected:', file.name, file.size);
+                    setUploadingImage(true);
+                    try {
+                      console.log('Starting upload...');
+                      const url = await uploadToCloudinary(file, 'image');
+                      console.log('Upload successful:', url);
+                      setFormData(prev => ({ ...prev, imageUrl: url }));
+                    } catch (error) {
+                      console.error('Upload failed:', error);
+                      alert('Failed to upload image: ' + error.message);
+                    } finally {
+                      setUploadingImage(false);
+                    }
                   }
                 }}
+                disabled={uploadingImage}
                 className="w-full bg-white/40 backdrop-blur-lg border border-white/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               />
+              {uploadingImage && <p className="text-sm text-gray-900 mt-1">Uploading...</p>}
               {formData.imageUrl && (
                 <div className="mt-2">
                   <img src={formData.imageUrl} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
@@ -279,22 +335,27 @@ const AddItem = ({ onSuccess, onBack }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-900 mb-1">Video URL</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Video</label>
               <input
                 type="file"
                 accept="video/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData(prev => ({ ...prev, videoUrl: reader.result }));
-                    };
-                    reader.readAsDataURL(file);
+                    setUploadingVideo(true);
+                    try {
+                      const url = await uploadToCloudinary(file, 'video');
+                      setFormData(prev => ({ ...prev, videoUrl: url }));
+                    } catch (error) {
+                      alert('Failed to upload video');
+                    }
+                    setUploadingVideo(false);
                   }
                 }}
+                disabled={uploadingVideo}
                 className="w-full bg-white/40 backdrop-blur-lg border border-white/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               />
+              {uploadingVideo && <p className="text-sm text-gray-900 mt-1">Uploading...</p>}
               {formData.videoUrl && (
                 <div className="mt-2">
                   <video src={formData.videoUrl} controls className="w-full h-32 rounded-xl" />

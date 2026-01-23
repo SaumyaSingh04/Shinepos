@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import RestaurantSidebar from './RestaurantSidebar';
 import RestaurantDashboardHome from '../components/Reasturant/Dashboard/Dashboard';
 import Category from '../components/Reasturant/Menu/Category/MainCategorys';
@@ -40,37 +41,51 @@ const RestaurantDashboard = () => {
   };
 
   const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <RestaurantDashboardHome />;
+    const content = (() => {
+      switch (activeTab) {
+        case 'dashboard':
+          return <RestaurantDashboardHome />;
+        case 'category':
+          return <Category />;
+        case 'menu':
+          return <Menu />;
+        case 'addons':
+          return <Addon />;
+        case 'variations':
+          return <Variation />;
+        case 'orders':
+          return <Order />;
+        case 'tables':
+          return <Tables />;
+        case 'kot':
+          return <KOT />;
+        case 'inventory':
+          return <Inventory initialTab="list" onTabChange={(tab) => setActiveTab(tab === 'list' ? 'inventory' : 'add-inventory')} />;
+        case 'add-inventory':
+          return <Inventory initialTab="add" onTabChange={(tab) => setActiveTab(tab === 'list' ? 'inventory' : 'add-inventory')} />;
+        case 'staff':
+          return <StaffList />;
+        case 'subscription':
+          return <SubscriptionPlans />;
+        case 'settings':
+          return <div className="p-6"><h2 className="text-2xl font-bold">Settings</h2></div>;
+        default:
+          return <RestaurantDashboardHome />;
+      }
+    })();
 
-      case 'category':
-        return <Category />;
-      case 'menu':
-        return <Menu />;
-      case 'addons':
-        return <Addon />;
-      case 'variations':
-        return <Variation />;
-      case 'orders':
-        return <Order />;
-      case 'tables':
-        return <Tables />;
-      case 'kot':
-        return <KOT />;
-      case 'inventory':
-        return <Inventory initialTab="list" onTabChange={(tab) => setActiveTab(tab === 'list' ? 'inventory' : 'add-inventory')} />;
-      case 'add-inventory':
-        return <Inventory initialTab="add" onTabChange={(tab) => setActiveTab(tab === 'list' ? 'inventory' : 'add-inventory')} />;
-      case 'staff':
-        return <StaffList />;
-      case 'subscription':
-        return <SubscriptionPlans />;
-      case 'settings':
-        return <div className="p-6"><h2 className="text-2xl font-bold">Settings</h2></div>;
-      default:
-        return <RestaurantDashboardHome />;
-    }
+    return (
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className="h-full"
+      >
+        {content}
+      </motion.div>
+    );
   };
 
   return (
@@ -88,8 +103,10 @@ const RestaurantDashboard = () => {
       />
       <SubscriptionBlocker />
       <RestaurantSidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
-      <div className="flex-1 overflow-auto relative z-10">
-        {renderContent()}
+      <div className="flex-1 overflow-auto relative z-10 bg-transparent">
+        <AnimatePresence mode="wait" initial={false}>
+          {renderContent()}
+        </AnimatePresence>
       </div>
     </div>
   );

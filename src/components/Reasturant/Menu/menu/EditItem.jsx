@@ -19,6 +19,8 @@ const EditItem = ({ item, onSuccess, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [searchAddon, setSearchAddon] = useState('');
   const [searchVariation, setSearchVariation] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   useEffect(() => {
     fetchAddons();
@@ -65,6 +67,31 @@ const EditItem = ({ item, onSuccess, onBack }) => {
       }
     } catch (error) {
       console.error('Error fetching variations:', error);
+    }
+  };
+
+  const uploadToCloudinary = async (file, type) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/media`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Upload error:', error);
+        throw new Error(error.error || 'Upload failed');
+      }
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error('Upload exception:', error);
+      throw error;
     }
   };
 
@@ -268,22 +295,27 @@ const EditItem = ({ item, onSuccess, onBack }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">Image URL</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Image</label>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData(prev => ({ ...prev, imageUrl: reader.result }));
-                    };
-                    reader.readAsDataURL(file);
+                    setUploadingImage(true);
+                    try {
+                      const url = await uploadToCloudinary(file, 'image');
+                      setFormData(prev => ({ ...prev, imageUrl: url }));
+                    } catch (error) {
+                      alert('Failed to upload image');
+                    }
+                    setUploadingImage(false);
                   }
                 }}
+                disabled={uploadingImage}
                 className="w-full bg-white/30 backdrop-blur-md border border-white/40 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               />
+              {uploadingImage && <p className="text-sm text-gray-900 mt-1">Uploading...</p>}
               {formData.imageUrl && (
                 <div className="mt-2">
                   <img src={formData.imageUrl} alt="Preview" className="w-full h-32 object-cover rounded-xl" />
@@ -292,22 +324,27 @@ const EditItem = ({ item, onSuccess, onBack }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-900 mb-1">Video URL</label>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Video</label>
               <input
                 type="file"
                 accept="video/*"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                      setFormData(prev => ({ ...prev, videoUrl: reader.result }));
-                    };
-                    reader.readAsDataURL(file);
+                    setUploadingVideo(true);
+                    try {
+                      const url = await uploadToCloudinary(file, 'video');
+                      setFormData(prev => ({ ...prev, videoUrl: url }));
+                    } catch (error) {
+                      alert('Failed to upload video');
+                    }
+                    setUploadingVideo(false);
                   }
                 }}
+                disabled={uploadingVideo}
                 className="w-full bg-white/30 backdrop-blur-md border border-white/40 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               />
+              {uploadingVideo && <p className="text-sm text-gray-900 mt-1">Uploading...</p>}
               {formData.videoUrl && (
                 <div className="mt-2">
                   <video src={formData.videoUrl} controls className="w-full h-32 rounded-xl" />
