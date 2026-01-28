@@ -17,6 +17,7 @@ import KOT from '../components/Reasturant/Order/KOT/KOT';
 import Inventory from '../components/Reasturant/Inventory/Inventory';
 import SubscriptionPlans from '../components/Reasturant/Subscription/SubscriptionPlans';
 import SubscriptionBlocker from './SubscriptionBlocker';
+import Attendance from '../components/Reasturant/Attendance/Attendance';
 
 const RestaurantDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -72,6 +73,8 @@ const RestaurantDashboard = () => {
           return <Inventory initialTab="add" onTabChange={(tab) => setActiveTab(tab === 'list' ? 'inventory' : 'add-inventory')} />;
         case 'staff':
           return <StaffList />;
+        case 'attendance':
+          return <Attendance />;
         case 'subscription':
           return <SubscriptionPlans />;
         case 'settings':
@@ -109,6 +112,7 @@ const RestaurantDashboard = () => {
       inventory: 'Inventory',
       'add-inventory': 'Add Inventory',
       staff: 'Staff',
+      attendance: 'Attendance',
       subscription: 'Subscription',
       settings: 'Settings'
     };

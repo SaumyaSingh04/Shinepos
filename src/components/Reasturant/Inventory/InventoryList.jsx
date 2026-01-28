@@ -24,12 +24,12 @@ const InventoryList = ({ inventory, onUpdate, onRestock, onRefresh, onEdit, onDe
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-xl font-bold">Inventory Items</h2>
+    <div className="bg-white/20 backdrop-blur-2xl rounded-2xl animate-fadeIn">
+      <div className="p-6 border-b border-white/30 flex justify-between items-center">
+        <h2 className="text-xl font-bold text-gray-900">📦 Inventory Items</h2>
         <button
           onClick={onRefresh}
-          className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+          className="flex items-center space-x-2 px-4 py-2 bg-white/30 backdrop-blur-md hover:bg-white/40 text-gray-900 rounded-xl transition-colors"
         >
           <FiRefreshCw />
           <span>Refresh</span>
@@ -38,21 +38,21 @@ const InventoryList = ({ inventory, onUpdate, onRestock, onRefresh, onEdit, onDe
 
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-white/30 backdrop-blur-lg">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Stock</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Stock</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cost/Unit</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Supplier</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Current Stock</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Min Stock</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Unit</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Cost/Unit</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Supplier</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-white/30">
             {inventory.map((item) => (
-              <tr key={item._id} className={`hover:bg-gray-50 ${item.isLowStock ? 'bg-orange-50' : ''}`}>
+              <tr key={item._id} className={`hover:bg-white/20 transition-colors ${item.isLowStock ? 'bg-orange-500/20' : ''}`}>
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.name}</td>
                 <td className="px-4 py-3 text-sm text-gray-900 capitalize">{item.category}</td>
                 <td className="px-4 py-3 text-sm">
@@ -96,38 +96,38 @@ const InventoryList = ({ inventory, onUpdate, onRestock, onRefresh, onEdit, onDe
       </div>
 
       {inventory.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-900">
           No inventory items found
         </div>
       )}
 
       {restockModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-bold mb-4">Restock Item</h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/20 backdrop-blur-2xl rounded-2xl p-6 w-96">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">📦 Restock Item</h3>
             <input
               type="number"
               value={restockQty}
               onChange={(e) => setRestockQty(e.target.value)}
               placeholder="Enter quantity"
-              className="w-full px-3 py-2 border rounded-lg mb-4"
+              className="w-full bg-white/40 backdrop-blur-lg border border-white/50 rounded-xl px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-900"
               min="1"
             />
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               <button
                 onClick={handleRestock}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-white/30 backdrop-blur-md hover:bg-white/40 text-gray-900 rounded-xl transition-colors"
               >
-                Restock
+                ✓ Restock
               </button>
               <button
                 onClick={() => {
                   setRestockModal(null);
                   setRestockQty('');
                 }}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                className="flex-1 px-4 py-2 bg-white/30 backdrop-blur-md hover:bg-white/40 text-gray-900 rounded-xl transition-colors"
               >
-                Cancel
+                ← Cancel
               </button>
             </div>
           </div>
@@ -135,22 +135,22 @@ const InventoryList = ({ inventory, onUpdate, onRestock, onRefresh, onEdit, onDe
       )}
 
       {deleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h3 className="text-lg font-bold mb-4">Delete Item</h3>
-            <p className="mb-4">Are you sure you want to delete this item?</p>
-            <div className="flex space-x-2">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/20 backdrop-blur-2xl rounded-2xl p-6 w-96">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">🗑️ Delete Item</h3>
+            <p className="mb-4 text-gray-900">Are you sure you want to delete this item?</p>
+            <div className="flex space-x-3">
               <button
                 onClick={handleDelete}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="flex-1 px-4 py-2 bg-red-500/30 backdrop-blur-md hover:bg-red-500/40 text-red-700 rounded-xl transition-colors"
               >
-                Delete
+                ✓ Delete
               </button>
               <button
                 onClick={() => setDeleteModal(null)}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                className="flex-1 px-4 py-2 bg-white/30 backdrop-blur-md hover:bg-white/40 text-gray-900 rounded-xl transition-colors"
               >
-                Cancel
+                ← Cancel
               </button>
             </div>
           </div>
