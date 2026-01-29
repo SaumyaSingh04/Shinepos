@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import OrderDetailsPopup from './OrderDetailsPopup';
 
-const RecentOrders = ({ orders, delay = 0 }) => {
+const RecentOrders = ({ orders, delay = 0, onOrderClick }) => {
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800';
@@ -12,6 +16,7 @@ const RecentOrders = ({ orders, delay = 0 }) => {
   };
 
   return (
+    <>
     <motion.div 
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -31,7 +36,13 @@ const RecentOrders = ({ orders, delay = 0 }) => {
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: delay + (index * 0.1), duration: 0.3 }}
-            className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              setClickPosition({ x: rect.right, y: rect.top + rect.height / 2 });
+              console.log('Clicked order:', order);
+              setSelectedOrder(order);
+            }}
+            className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
           >
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
@@ -40,7 +51,7 @@ const RecentOrders = ({ orders, delay = 0 }) => {
                   {order.status}
                 </span>
               </div>
-              <p className="text-gray-300 text-sm">{order.customer} • {order.items} items</p>
+              <p className="text-gray-300 text-sm">{order.customer} • {Array.isArray(order.items) ? order.items.length : order.items} items</p>
             </div>
             <div className="text-right">
               <p className="text-white font-medium">₹{order.amount}</p>
@@ -55,6 +66,16 @@ const RecentOrders = ({ orders, delay = 0 }) => {
         )}
       </div>
     </motion.div>
+
+      {/* Order Details Popup */}
+      {selectedOrder && (
+        <OrderDetailsPopup 
+          order={selectedOrder}
+          position={clickPosition}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
+    </>
   );
 };
 
