@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiBell, FiUser, FiSettings, FiLogOut, FiMenu, FiSearch } from 'react-icons/fi';
 
@@ -6,6 +6,18 @@ const DashboardHeader = ({ title, onMenuClick, user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-container')) {
+        setShowNotifications(false);
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const notifications = [
     { id: 1, message: 'New order #ORD-001 received', time: '2 min ago', type: 'order' },
@@ -26,7 +38,7 @@ const DashboardHeader = ({ title, onMenuClick, user }) => {
     <motion.header 
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 py-3 lg:px-6 lg:py-4"
+      className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 py-3 lg:px-6 lg:py-4 relative z-[9998]"
     >
       <div className="flex items-center justify-between">
         {/* Left Section */}
@@ -68,9 +80,12 @@ const DashboardHeader = ({ title, onMenuClick, user }) => {
         {/* Right Section */}
         <div className="flex items-center gap-2 lg:gap-4">
           {/* Notifications */}
-          <div className="relative">
+          <div className="relative z-[9999] dropdown-container">
             <button
-              onClick={() => setShowNotifications(!showNotifications)}
+              onClick={() => {
+                setShowNotifications(!showNotifications);
+                setShowProfile(false);
+              }}
               className="relative p-2 hover:bg-white/20 rounded-lg transition-colors"
             >
               <FiBell className="text-white text-xl" />
@@ -87,7 +102,7 @@ const DashboardHeader = ({ title, onMenuClick, user }) => {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-2 w-80 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-white/20 z-50"
+                  className="absolute right-0 top-full mt-2 w-80 bg-white/95 backdrop-blur-md rounded-lg shadow-xl border border-white/20 z-[9999]"
                 >
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-800 mb-3">Notifications</h3>
@@ -112,9 +127,12 @@ const DashboardHeader = ({ title, onMenuClick, user }) => {
           </div>
 
           {/* User Profile */}
-          <div className="relative">
+          <div className="relative z-[9999] dropdown-container">
             <button
-              onClick={() => setShowProfile(!showProfile)}
+              onClick={() => {
+                setShowProfile(!showProfile);
+                setShowNotifications(false);
+              }}
               className="flex items-center gap-2 p-2 hover:bg-white/20 rounded-lg transition-colors"
             >
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">

@@ -7,6 +7,7 @@ import RecentOrders from './RecentOrders';
 import TopSellingItems from './TopSellingItems';
 import QuickActions from './QuickActions';
 import OrderStatus from './OrderStatus';
+import MyAttendance from '../Attendance/MyAttendance';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -205,6 +206,9 @@ const Dashboard = () => {
       transition={{ duration: 0.3 }}
       className="p-6 bg-transparent min-h-screen space-y-6"
     >
+      {/* My Attendance - Show for staff */}
+      <MyAttendance />
+      
       {/* Welcome Header */}
       <motion.div 
         initial={{ y: -20, opacity: 0 }}

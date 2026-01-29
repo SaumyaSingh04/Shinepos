@@ -153,7 +153,7 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                             <p className="font-medium text-gray-900">{item.quantity}x {item.name}</p>
                             {item.variation && <p className="text-xs text-gray-700">Variation: {item.variation.name}</p>}
                           </div>
-                          <span className="font-bold text-gray-900">{formatCurrency(item.price * item.quantity)}</span>
+                          <span className="font-bold text-gray-900">{formatCurrency(item.itemTotal || (item.variation?.price * item.quantity) || (item.basePrice * item.quantity) || 0)}</span>
                         </div>
                       ))}
                     </div>

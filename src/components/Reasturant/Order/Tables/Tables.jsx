@@ -36,12 +36,50 @@ const Tables = () => {
   const handleUpdateTableStatus = async (tableId, status) => {
     try {
       const token = localStorage.getItem('token');
+      const table = tables.find(t => t._id === tableId);
+      
+      // Update the main table
       await axios.patch(`${API_BASE_URL}/api/table/tables/${tableId}/status`, { status }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setTables(prev => prev.map(table => 
-        table._id === tableId ? { ...table, status } : table
+      
+      let tablesToUpdate = [tableId];
+      
+      // If this table has merged tables, update all merged tables with same status
+      if (table.mergedWith && table.mergedWith.length > 0) {
+        const updatePromises = table.mergedWith.map(mergedTableId => 
+          axios.patch(`${API_BASE_URL}/api/table/tables/${mergedTableId}/status`, { status }, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+        );
+        await Promise.all(updatePromises);
+        tablesToUpdate = [tableId, ...table.mergedWith];
+      }
+      
+      // If this table is part of another table's merge, update the parent and all siblings
+      const parentTable = tables.find(t => t.mergedWith && t.mergedWith.includes(tableId));
+      if (parentTable) {
+        await axios.patch(`${API_BASE_URL}/api/table/tables/${parentTable._id}/status`, { status }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const siblingPromises = parentTable.mergedWith
+          .filter(id => id !== tableId)
+          .map(siblingId => 
+            axios.patch(`${API_BASE_URL}/api/table/tables/${siblingId}/status`, { status }, {
+              headers: { Authorization: `Bearer ${token}` }
+            })
+          );
+        await Promise.all(siblingPromises);
+        
+        tablesToUpdate = [parentTable._id, ...parentTable.mergedWith];
+      }
+      
+      // Update local state for all affected tables
+      setTables(prev => prev.map(t => 
+        tablesToUpdate.includes(t._id) ? { ...t, status } : t
       ));
+      
     } catch (error) {
       console.error('Update table status error:', error);
     }

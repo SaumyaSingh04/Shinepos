@@ -9,6 +9,28 @@ const TableList = ({ tables, onUpdateStatus, onEdit }) => {
   const [showMergeModal, setShowMergeModal] = useState(false);
   const [selectedTable, setSelectedTable] = useState(null);
 
+  // Helper function to get effective status for a table
+  const getEffectiveStatus = (table) => {
+    // If this table is merged with others and any merged table is occupied, show as occupied
+    if (table.mergedWith && table.mergedWith.length > 0) {
+      const mergedTable = tables.find(t => t.mergedWith && t.mergedWith.includes(table._id) && t.status === 'OCCUPIED');
+      if (mergedTable) return 'OCCUPIED';
+    }
+    
+    // If this table has merged tables and is occupied, all merged tables should show as occupied
+    if (table.status === 'OCCUPIED' && table.mergedWith && table.mergedWith.length > 0) {
+      return 'OCCUPIED';
+    }
+    
+    // Check if this table is part of another table's merge and that table is occupied
+    const parentMergedTable = tables.find(t => 
+      t.mergedWith && t.mergedWith.includes(table._id) && t.status === 'OCCUPIED'
+    );
+    if (parentMergedTable) return 'OCCUPIED';
+    
+    return table.status;
+  };
+
   const statuses = [
     { value: 'AVAILABLE', label: 'Available', icon: <FiCheckCircle /> },
     { value: 'OCCUPIED', label: 'Occupied', icon: <FiXCircle /> },
@@ -66,12 +88,12 @@ const TableList = ({ tables, onUpdateStatus, onEdit }) => {
               <p className="text-sm font-medium">Location: {table.location}</p>
             </div>
             {table.mergedWith && table.mergedWith.length > 0 && (
-              <div className="bg-purple-50 rounded-lg p-3 mt-3 border-2 border-purple-200">
+              <div className="bg-purple-50 rounded-lg p-3 mt-3 border-2 border-purple-200 overflow-hidden">
                 <div className="flex items-center space-x-2 mb-2">
-                  <FiLink className="text-lg text-purple-700" />
+                  <FiLink className="text-lg text-purple-700 flex-shrink-0" />
                   <p className="text-sm font-bold text-purple-700">Merged Tables:</p>
                 </div>
-                <p className="text-xs text-purple-600 font-medium">
+                <p className="text-xs text-purple-600 font-medium break-words">
                   {table.mergedWith.map(id => {
                     const originalTable = tables.find(t => t._id === id);
                     return originalTable?.tableNumber;
@@ -79,7 +101,7 @@ const TableList = ({ tables, onUpdateStatus, onEdit }) => {
                 </p>
                 {table.mergedGuestCount && (
                   <p className="text-xs text-purple-600 font-medium mt-1 flex items-center gap-1">
-                    <FiUsers /> Guests: {table.mergedGuestCount}
+                    <FiUsers className="flex-shrink-0" /> Guests: {table.mergedGuestCount}
                   </p>
                 )}
               </div>
