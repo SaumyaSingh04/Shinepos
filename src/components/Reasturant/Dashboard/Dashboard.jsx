@@ -11,6 +11,9 @@ import PaymentStatistics from './PaymentStatistics';
 import MyAttendance from '../Attendance/MyAttendance';
 
 const Dashboard = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = user.role === 'RESTAURANT_ADMIN' || user.role === 'MANAGER';
+  
   const [stats, setStats] = useState({
     orders: 0,
     revenue: 0,
@@ -162,6 +165,8 @@ const Dashboard = () => {
       transition={{ duration: 0.3 }}
       className="p-6 bg-transparent min-h-screen space-y-6"
     >
+      {/* My Attendance - Show only for staff, not admin */}
+      {!isAdmin && <MyAttendance />}
       {/* My Attendance - Show for staff */}
       {/* <MyAttendance /> */}
       

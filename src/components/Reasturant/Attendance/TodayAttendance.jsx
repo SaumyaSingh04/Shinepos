@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiClock, FiUser, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
+const getShiftName = (startTime, endTime) => {
+  const shiftMap = {
+    '06:00-14:00': '🌅 Morning',
+    '09:00-17:00': '🏢 Day', 
+    '14:00-22:00': '🌆 Evening',
+    '22:00-06:00': '🌙 Night',
+    '10:00-18:00': '☀️ Regular'
+  };
+  return shiftMap[`${startTime}-${endTime}`] || `${startTime}-${endTime}`;
+};
+
 const TodayAttendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +27,8 @@ const TodayAttendance = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/today`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      
+      console.log('Today attendance response:', response.data);
       setAttendance(response.data.present || []);
     } catch (error) {
       console.error('Error fetching today attendance:', error);
@@ -66,6 +79,12 @@ const TodayAttendance = () => {
               </div>
               
               <div className="space-y-2 text-sm text-gray-200">
+                {record.staffId?.shiftSchedule?.fixedShift && (
+                  <div className="text-blue-300">
+                    {getShiftName(record.staffId.shiftSchedule.fixedShift.startTime, record.staffId.shiftSchedule.fixedShift.endTime)} 
+                    ({record.staffId.shiftSchedule.fixedShift.startTime} - {record.staffId.shiftSchedule.fixedShift.endTime})
+                  </div>
+                )}
                 {record.checkIn && (
                   <div className="flex items-center space-x-2">
                     <FiClock className="text-green-400" />
@@ -78,9 +97,9 @@ const TodayAttendance = () => {
                     <span>Out: {formatTime(record.checkOut)}</span>
                   </div>
                 )}
-                {record.hoursWorked && (
+                {record.workingHours && (
                   <div className="text-white font-medium">
-                    Hours: {record.hoursWorked.toFixed(1)}h
+                    Hours: {record.workingHours.toFixed(1)}h
                   </div>
                 )}
               </div>

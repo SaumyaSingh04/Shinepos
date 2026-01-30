@@ -3,11 +3,12 @@ import AttendanceList from './AttendanceList';
 import TodayAttendance from './TodayAttendance';
 import StaffCheckIn from './StaffCheckIn';
 import MyAttendanceHistory from './MyAttendanceHistory';
+import ShiftAttendance from './ShiftAttendance';
 
 const Attendance = () => {
-  const [activeTab, setActiveTab] = useState('my-attendance');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isAdmin = user.role === 'admin' || user.role === 'owner';
+  const isAdmin = user.role === 'RESTAURANT_ADMIN' || user.role === 'MANAGER';
+  const [activeTab, setActiveTab] = useState(isAdmin ? 'today' : 'my-attendance');
 
   const renderContent = () => {
     if (!isAdmin) {
@@ -26,8 +27,8 @@ const Attendance = () => {
         return <TodayAttendance />;
       case 'all':
         return <AttendanceList />;
-      case 'checkin':
-        return <StaffCheckIn />;
+      case 'shifts':
+        return <ShiftAttendance />;
       default:
         return <TodayAttendance />;
     }
@@ -60,14 +61,14 @@ const Attendance = () => {
               All Records
             </button>
             <button
-              onClick={() => setActiveTab('checkin')}
+              onClick={() => setActiveTab('shifts')}
               className={`px-4 py-2 rounded-xl transition-colors ${
-                activeTab === 'checkin'
+                activeTab === 'shifts'
                   ? 'bg-white/30 backdrop-blur-md text-white'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
               }`}
             >
-              Check In/Out
+              Shifts
             </button>
           </div>
         )}

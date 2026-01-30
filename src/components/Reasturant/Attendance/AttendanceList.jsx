@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiClock, FiUser, FiCalendar, FiFilter } from 'react-icons/fi';
 
+const getShiftName = (startTime, endTime) => {
+  const shiftMap = {
+    '06:00-14:00': '🌅 Morning',
+    '09:00-17:00': '🏢 Day', 
+    '14:00-22:00': '🌆 Evening',
+    '22:00-06:00': '🌙 Night',
+    '10:00-18:00': '☀️ Regular'
+  };
+  return shiftMap[`${startTime}-${endTime}`] || `${startTime}-${endTime}`;
+};
+
 const AttendanceList = () => {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +28,22 @@ const AttendanceList = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setAttendance(response.data.attendance || []);
+      
+      // Fetch staff details to get shift information
+      const staffResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/staff/all/staff`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const staffMap = new Map(staffResponse.data.staff?.map(s => [s._id, s]) || []);
+      const attendanceWithShifts = (response.data.attendance || []).map(record => ({
+        ...record,
+        staffId: {
+          ...record.staffId,
+          shiftSchedule: staffMap.get(record.staffId._id)?.shiftSchedule
+        }
+      }));
+      
+      setAttendance(attendanceWithShifts);
     } catch (error) {
       console.error('Error fetching attendance:', error);
     } finally {
@@ -78,6 +104,7 @@ const AttendanceList = () => {
             <thead className="bg-white/30 backdrop-blur-lg">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium text-white">Staff</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-white">Shift</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-white">Date</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-white">Check In</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-white">Check Out</th>
@@ -94,6 +121,12 @@ const AttendanceList = () => {
                       <span className="text-white">{record.staffId?.name || 'Unknown'}</span>
                     </div>
                   </td>
+                  <td className="px-4 py-3 text-blue-300 text-sm">
+                    {record.staffId?.shiftSchedule?.fixedShift ? 
+                      getShiftName(record.staffId.shiftSchedule.fixedShift.startTime, record.staffId.shiftSchedule.fixedShift.endTime) : 
+                      'No shift'
+                    }
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
                       <FiCalendar className="text-white" />
@@ -107,7 +140,7 @@ const AttendanceList = () => {
                     {record.checkOut ? formatTime(record.checkOut) : '-'}
                   </td>
                   <td className="px-4 py-3 text-white">
-                    {record.hoursWorked ? `${record.hoursWorked.toFixed(1)}h` : '-'}
+                    {record.workingHours ? `${record.workingHours.toFixed(1)}h` : '-'}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-lg text-xs font-bold ${

@@ -17,6 +17,7 @@ const MyAttendanceHistory = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/attendance/my-attendance`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('My attendance response:', response.data);
       setAttendance(response.data.attendance || []);
     } catch (error) {
       console.error('Error fetching my attendance:', error);
@@ -30,6 +31,7 @@ const MyAttendanceHistory = () => {
   };
 
   const formatTime = (timeString) => {
+    if (!timeString) return '';
     return new Date(timeString).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
@@ -87,7 +89,7 @@ const MyAttendanceHistory = () => {
                         <span>Out: {formatTime(record.actual.checkOut)}</span>
                       </div>
                     )}
-                    {record.actual.workingHours && (
+                    {record.actual.workingHours > 0 && (
                       <div className="font-medium">
                         {record.actual.workingHours.toFixed(1)}h
                       </div>
